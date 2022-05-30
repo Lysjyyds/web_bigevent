@@ -4,4 +4,21 @@
 $.ajaxPrefilter((option) => {
     // 在发起真正的 Ajax 请求之前，统一拼接请求的根路径
     option.url = `http://www.liulongbin.top:3007` + option.url;
+
+      //给/my/相关借口注入 token
+  if(option.url.includes('/my/')){
+    option.headers = {
+      Authorization:localStorage.getItem("token"),
+      };
+  }
+
+  //响应拦截器
+  option.complete = (res) => {
+    if(res.responseJSON.status === 1 && res.responseJSON.message === '身份认证失败！'){
+      //强制清空token
+      localStorage.removeItem('token')
+      location.href = '/login.html';
+    }
+  }
   });
+
